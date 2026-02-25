@@ -22,6 +22,17 @@ def handle_timeout_exception(error):
     return response
 
 
+@app.errorhandler(ConnectionError)
+def hande_connection_error(error):
+    for ip, conn in connections.items():
+        try:
+            conn.close()
+            del connections[ip]
+            get_connection(ip)
+        except OSError as e:
+            del connections[ip]
+
+
 def get_connection(gate_id=None):
     if gate_id is None:
         gate_id = flask.request.args.get('gate')
