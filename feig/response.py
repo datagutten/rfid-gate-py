@@ -1,4 +1,5 @@
 import base64
+import re
 import struct
 import warnings
 from typing import Optional
@@ -200,7 +201,7 @@ class ReadBuffer(FeigResponse):
             return None
         tag_start = self.payload.find(b'\xe0')
         if tag_start and self.received_sets == 0:
-            self.received_sets = 1
+            self.received_sets = 99
 
         tags = []
         uids = []
@@ -208,7 +209,8 @@ class ReadBuffer(FeigResponse):
             try:
                 uid, unknown1, num_blocks, block_size = struct.unpack('8scBB', self.payload[tag_start:tag_start + 11])
             except struct.error as e:
-                raise RuntimeError from e
+                # raise RuntimeError from e
+                break
 
             if uid[0] != 0xe0:  # https://en.wikipedia.org/wiki/ISO/IEC_15693#Implementations
                 raise RuntimeError('The first byte of the UID is not 0xE0')
