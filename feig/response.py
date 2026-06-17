@@ -240,15 +240,27 @@ class ReadBuffer(FeigResponse):
         :return: Tag data stripped for invalid characters
         """
         output = ''
+        sequences = []
         for byte in data:
             if byte < 32 or byte > 126:
                 if output == '':
                     continue  # Skip invalid characters at start
                 else:
-                    break  # Stop after first invalid character on output
-            output += chr(byte)
-
-        return output
+                    sequences.append(output)
+                    output = ''
+                    # break  # Stop after first invalid character on output
+            else:
+                output += chr(byte)
+        sequences.append(output)
+        longest = 0
+        longest_sequence = ''
+        for sequence in sequences:
+            if re.match(r'.*NO\d{7}$', sequence):  # A short sequence that comes before or after the real tag
+                continue
+            if len(sequence) > longest:
+                longest = len(sequence)
+                longest_sequence = sequence
+        return longest_sequence
 
     def dict(self):
         if not self.valid:
