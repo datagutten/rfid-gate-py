@@ -31,7 +31,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Extract metadata (tags, labels) for Docker
-        id: meta
+        id: meta_api
         uses: docker/metadata-action@v5.5.1
         with:
           images: datagutten/feig-py
@@ -45,6 +45,13 @@ jobs:
           tags: |
             datagutten/feig-py:api-latest
             ghcr.io/datagutten/feig-py:api-latest
+          labels: ${{ steps.meta_api.outputs.labels }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5.5.1
+        with:
+          images: datagutten/feig-py
 
       - name: Build and push backend Docker image
         id: push
