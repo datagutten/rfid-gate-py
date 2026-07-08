@@ -1,0 +1,8 @@
+FROM python:3.14
+RUN pip install -U pip gunicorn flask requests
+
+WORKDIR /app
+COPY *.py /app
+COPY feig /app/feig
+
+CMD gunicorn -c gunicorn.conf_api.py
