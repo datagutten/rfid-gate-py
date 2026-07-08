@@ -36,6 +36,15 @@ jobs:
         with:
           images: datagutten/feig-py
 
+      - name: Build and push API Docker image
+        id: push_api
+        uses: docker/build-push-action@v7
+        with:
+          push: true
+          tags: |
+            datagutten/feig-py:api-latest
+            ghcr.io/datagutten/feig-py:api-latest
+
       - name: Build and push backend Docker image
         id: push
         uses: docker/build-push-action@v6.5.0
