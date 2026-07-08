@@ -41,6 +41,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           push: true
+          file: Dockerfile-api
           tags: |
             datagutten/feig-py:api-latest
             ghcr.io/datagutten/feig-py:api-latest
