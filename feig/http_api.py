@@ -1,7 +1,7 @@
 import flask
 from flask import Flask, jsonify
 
-from .gate_socket import FeigGate
+from feig.gate_socket import FeigGate
 
 app = Flask(__name__)
 

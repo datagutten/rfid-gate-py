@@ -3,7 +3,8 @@ import socket
 import time
 from pathlib import Path
 
-from . import response as feig_response, FeigRequest
+from feig import FeigRequest
+from feig import response as feig_response
 
 
 class FeigGate:
@@ -48,6 +49,9 @@ class FeigGate:
         request_obj = FeigRequest.parse_request(data)
         response = self.send_read(data, save)
         return feig_response.FeigResponse.parse_response(response, command, request_obj)
+
+    def system_time(self):
+        query = b'\x02\x00\x07\xFF\x88\x85\x5D'
 
     def info(self) -> feig_response.ReaderInfoResponse:
         query = b'\x02\x00\x08\xFF\x66\xFF\xF0\x1D'
