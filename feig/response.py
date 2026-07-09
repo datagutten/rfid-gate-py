@@ -264,9 +264,9 @@ class ReadBuffer(FeigResponse):
                 longest_sequence = sequence
         return longest_sequence
 
-    def dict(self):
+    def dict(self) -> list:
         if not self.valid:
-            return None
+            return []
         return list(map(self.strip_tag, self.tags()))
 
 
