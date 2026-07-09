@@ -89,13 +89,18 @@ def buffer():
     gate_obj = get_connection()
     buffer_data = gate_obj.read_buffer()
 
-    if not buffer_data.success:
-        return {'raw': buffer_data.base64()}
-
-    return {
-        'tags': buffer_data.dict(),
-        'raw': buffer_data.base64()
+    data = {
+        'raw': buffer_data.base64(),
+        'status': buffer_data.status,
+        'tags': [],
     }
+
+    try:
+        data['tags'] = buffer_data.dict()
+    except RuntimeError as e:
+        data['error'] = str(e)
+
+    return data
 
 
 @app.route('/buffer_clear')
