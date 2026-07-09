@@ -1,6 +1,7 @@
 services:
   proxy1: &base
     image: datagutten/feig-py
+    build: .
     restart: always
     ports:
       - "${PROXY1}:10001:10001"
@@ -17,6 +18,8 @@ services:
   gate-api:
     build:
       dockerfile: Dockerfile-api
+    volumes:
+    - ./gate_data:/data
     restart: always
     ports:
       - "5000:80"

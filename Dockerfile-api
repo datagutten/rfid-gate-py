@@ -5,4 +5,5 @@ WORKDIR /app
 COPY *.py /app
 COPY feig /app/feig
 
+ENV DATA_FOLDER=/data
 CMD gunicorn -c gunicorn.conf_api.py
