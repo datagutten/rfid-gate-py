@@ -1,3 +1,4 @@
+import logging
 import os
 import socket
 import time
@@ -5,6 +6,8 @@ from pathlib import Path
 
 from feig import FeigRequest
 from feig import response as feig_response
+
+logger = logging.getLogger(__name__)
 
 
 class FeigGate:
@@ -14,15 +17,15 @@ class FeigGate:
     detectors: int = 1
 
     def __init__(self, ip: str, port: int = 10001, save=True):
-        print('Connecting to %s:%d' % (ip, port))
+        logger.info('Connecting to %s:%d' % (ip, port))
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.settimeout(1)
         self.socket.connect((ip, port))
-        print('Get gate info')
+        logger.info('Get gate info')
         self.gate_info = self.info()
         self.gate_id = self.gate_info.id
 
-        print('Connected to gate %d' % self.gate_id)
+        logger.info('Connected to gate %d' % self.gate_id)
         self.save = save
         if self.save:
             self.data_folder = Path(os.getenv('DATA_FOLDER', 'data'), str(self.gate_id))
@@ -33,6 +36,7 @@ class FeigGate:
         self.socket.close()
 
     def close(self):
+        logger.info('Closing socket to gate %s' % self.gate_id)
         self.socket.close()
 
     def send_read(self, data, save=True):
@@ -46,6 +50,7 @@ class FeigGate:
         return response
 
     def request(self, data: bytes, command: int = None, save=True):
+        logger.debug('Request command %d to gate %s', command, self.gate_id)
         request_obj = FeigRequest.parse_request(data)
         response = self.send_read(data, save)
         return feig_response.FeigResponse.parse_response(response, command, request_obj)
