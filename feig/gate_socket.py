@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class FeigGate:
-    gate_id: int
+    gate_id: int = 0
     gate_info = feig_response.ReaderInfoResponse
     save: bool = False
     detectors: int = 1
