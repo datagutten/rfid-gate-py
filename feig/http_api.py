@@ -11,9 +11,9 @@ logging.basicConfig(
     filename='/var/log/gate/gate_api.log',
     level=logging.DEBUG,
     filemode="a",
-    format="{asctime} - {levelname} - {message}",
+    format="{asctime} - {levelname}\t{name}: {message}",
     style="{",
-    datefmt="%Y-%m-%d %H:%M",
+    datefmt="%Y-%m-%d %H:%M:S",
 )
 connections = {}
 
