@@ -11,13 +11,16 @@ logger = logging.getLogger(__name__)
 
 
 class FeigGate:
+    ip: str
     gate_id: int = 0
     gate_info = feig_response.ReaderInfoResponse
     save: bool = False
     detectors: int = 1
+    connected: bool = False
 
     def __init__(self, ip: str, port: int = 10001, save=True):
         logger.info('Connecting to %s:%d' % (ip, port))
+        self.ip = ip
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.settimeout(1)
         self.socket.connect((ip, port))
@@ -26,6 +29,7 @@ class FeigGate:
         self.gate_id = self.gate_info.id
 
         logger.info('Connected to gate %d' % self.gate_id)
+        self.connected = True
         self.save = save
         if self.save:
             self.data_folder = Path(os.getenv('DATA_FOLDER', 'data'), str(self.gate_id))
@@ -50,8 +54,8 @@ class FeigGate:
         return response
 
     def request(self, data: bytes, command: int = None, save=True):
-        logger.debug('Request command %d to gate %s', command, self.gate_id)
         request_obj = FeigRequest.parse_request(data)
+        logger.debug('Request command %d to gate %d IP %s', command or request_obj.command, self.gate_id, self.ip)
         response = self.send_read(data, save)
         return feig_response.FeigResponse.parse_response(response, command, request_obj)
 
