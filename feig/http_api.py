@@ -1,15 +1,18 @@
+import logging
+
 import flask
 from flask import Flask, jsonify
 
 from feig.gate_socket import FeigGate
 
 app = Flask(__name__)
-
+logger = logging.getLogger(__name__)
 connections = {}
 
 
 @app.errorhandler(RuntimeError)
 def handle_exception(error):
+    logger.error('RuntimeError: %s', error)
     response = jsonify({'error': str(error)})
     response.status_code = 500
     return response
@@ -17,6 +20,7 @@ def handle_exception(error):
 
 @app.errorhandler(TimeoutError)
 def handle_timeout_exception(error):
+    logger.error('Timeout: %s', error)
     response = jsonify({'error': 'Timeout'})
     response.status_code = 500
     return response
@@ -24,6 +28,7 @@ def handle_timeout_exception(error):
 
 @app.errorhandler(ConnectionError)
 def hande_connection_error(error):
+    logger.error('Connection error: %s', error)
     for ip, conn in connections.items():
         try:
             conn.close()
@@ -38,6 +43,7 @@ def get_connection(gate_id=None):
         gate_id = flask.request.args.get('gate')
     if gate_id not in connections:
         try:
+            logger.info('Connect to %s', gate_id)
             gate_obj = FeigGate(gate_id)
             connections[gate_id] = gate_obj
         except ConnectionError as e:
@@ -98,6 +104,7 @@ def buffer():
     try:
         data['tags'] = buffer_data.dict()
     except RuntimeError as e:
+        logger.error('Error reading buffer: %s', str(e))
         data['error'] = str(e)
 
     return data
