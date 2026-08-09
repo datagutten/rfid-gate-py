@@ -13,7 +13,7 @@ logging.basicConfig(
     filemode="a",
     format="{asctime} - {levelname}\t{name}: {message}",
     style="{",
-    datefmt="%Y-%m-%d %H:%M:S",
+    datefmt="%Y-%m-%d %H:%M:%S",
 )
 connections = {}
 
