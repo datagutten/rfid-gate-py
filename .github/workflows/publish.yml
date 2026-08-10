@@ -34,7 +34,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta_api
-        uses: docker/metadata-action@v5.5.1
+        uses: docker/metadata-action@v6.2.0
         with:
           images: datagutten/feig-py
 
@@ -51,7 +51,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v5.5.1
+        uses: docker/metadata-action@v6.2.0
         with:
           images: datagutten/feig-py
 
