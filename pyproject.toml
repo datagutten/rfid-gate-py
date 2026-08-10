@@ -20,5 +20,5 @@ build-backend = "poetry.core.masonry.api"
 [dependency-groups]
 web = [
     "flask (>=3.1.3,<4.0.0)",
-    "requests (>=2.32.5,<3.0.0)"
+    "requests (>=2.34.2,<3.0.0)"
 ]
