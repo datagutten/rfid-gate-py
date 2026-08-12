@@ -23,9 +23,8 @@ class FeigGate:
     def __init__(self, ip: str, port: int = 10001, save=True):
         self.ip = ip
         self.port = port
-        self.connect()
-
         self.save = save
+
         if self.save:
             self.data_folder = Path(os.getenv('DATA_FOLDER', 'data'), str(self.gate_id))
             if not self.data_folder.exists():
