@@ -28,7 +28,7 @@ class FeigGate:
         self.gate_info = self.info()
         self.gate_id = self.gate_info.id
 
-        logger.info('Connected to gate %d' % self)
+        logger.info('Connected to gate %s' % self)
         self.connected = True
         self.save = save
         if self.save:
