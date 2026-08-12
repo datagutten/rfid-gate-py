@@ -24,12 +24,7 @@ class FeigGate:
         self.ip = ip
         self.port = port
         self.connect()
-        logger.info('Get gate info')
-        self.gate_info = self.info()
-        self.gate_id = self.gate_info.id
 
-        logger.info('Connected to gate %s' % self)
-        self.connected = True
         self.save = save
         if self.save:
             self.data_folder = Path(os.getenv('DATA_FOLDER', 'data'), str(self.gate_id))
@@ -50,6 +45,11 @@ class FeigGate:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.settimeout(1)
         self.socket.connect((self.ip, self.port))
+
+        self.gate_info = self.info()
+        self.gate_id = self.gate_info.id
+        logger.info('Connected to gate %s' % self)
+        self.connected = True
 
     def close(self):
         logger.info('Closing socket to gate %s' % self.gate_id)
@@ -75,6 +75,7 @@ class FeigGate:
         query = b'\x02\x00\x07\xFF\x88\x85\x5D'
 
     def info(self) -> feig_response.ReaderInfoResponse:
+        logger.info('Get gate info')
         query = b'\x02\x00\x08\xFF\x66\xFF\xF0\x1D'
         return self.request(query, command=0x66, save=False)
 
