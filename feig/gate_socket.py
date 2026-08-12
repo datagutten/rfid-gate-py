@@ -52,6 +52,7 @@ class FeigGate:
 
     def close(self):
         logger.info('Closing socket to gate %s' % self.gate_id)
+        self.connected = False
         self.socket.close()
 
     def send_read(self, data, save=True):
