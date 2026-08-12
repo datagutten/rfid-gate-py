@@ -37,7 +37,6 @@ def handle_os_error(error: OSError, gate_obj: FeigGate = None):
             logger.info('Reconnect succeeded to %s' % gate_obj)
         except OSError as e:
             logger.error('%s reopening connection to %s: %s', type(e).__name__, gate_obj, e)
-            del connections[gate_obj.gate_id]
 
     response = jsonify({'error': str(error)})
     response.status_code = 500
