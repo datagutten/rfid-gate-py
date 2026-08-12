@@ -22,6 +22,7 @@ class GateProxy:
         print('Connection from', addr)
         # print('Listening on %s %d', self.listen_socket.ad)
         self.gate = FeigGate(gate_ip)
+        self.gate.connect()
 
     def __del__(self):
         self.listen_conn.close()

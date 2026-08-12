@@ -44,18 +44,18 @@ def handle_os_error(error: OSError, gate_obj: FeigGate = None):
     return response
 
 
-def get_connection(gate_id=None):
-    if gate_id is None:
-        gate_id = flask.request.args.get('gate')
-    if gate_id not in connections:
+def get_connection(gate_ip: str = None):
+    if gate_ip is None:
+        gate_ip = flask.request.args.get('gate')
+    if gate_ip not in connections:
+        gate_obj = FeigGate(gate_ip)
         try:
-            logger.info('Connect to %s', gate_id)
-            gate_obj = FeigGate(gate_id)
-            connections[gate_id] = gate_obj
-        except ConnectionError as e:
-            raise RuntimeError from e
+            gate_obj.connect()
+            connections[gate_ip] = gate_obj
+        except OSError as e:
+            handle_os_error(e, gate_obj)
     else:
-        gate_obj = connections[gate_id]
+        gate_obj = connections[gate_ip]
 
     gate_obj.save = True
 
