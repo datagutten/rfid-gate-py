@@ -26,24 +26,22 @@ def handle_exception(error):
     return response
 
 
-@app.errorhandler(TimeoutError)
-def handle_timeout_exception(error):
-    logger.error('Timeout: %s', error)
-    response = jsonify({'error': 'Timeout'})
+def handle_os_error(error: OSError, gate_obj: FeigGate = None):
+    if not gate_obj:
+        logger.error('%s: %s', type(error).__name__, error)
+    else:
+        logger.error('%s: %s %s', type(error).__name__, error, gate_obj)
+        gate_obj.close()
+        try:
+            gate_obj.connect()
+            logger.info('Reconnect succeeded to %s' % gate_obj)
+        except OSError as e:
+            logger.error('%s reopening connection to %s: %s', type(e).__name__, gate_obj, e)
+            del connections[gate_obj.gate_id]
+
+    response = jsonify({'error': str(error)})
     response.status_code = 500
     return response
-
-
-@app.errorhandler(ConnectionError)
-def hande_connection_error(error):
-    logger.error('Connection error: %s', error)
-    for ip, conn in connections.items():
-        try:
-            conn.close()
-            del connections[ip]
-            get_connection(ip)
-        except OSError as e:
-            del connections[ip]
 
 
 def get_connection(gate_id=None):
@@ -71,8 +69,12 @@ def hello():
 
 @app.route('/people')
 def count():
-    gate_obj = get_connection(flask.request.args.get('gate'))
-    counter = gate_obj.people_count()
+    gate_obj = get_connection()
+    try:
+        counter = gate_obj.people_count()
+    except OSError as e:
+        return handle_os_error(e, gate_obj)
+
     return {'in': counter.people_in, 'out': counter.people_out, 'raw': counter.base64()}
 
 
@@ -101,7 +103,10 @@ def info():
 @app.route('/buffer')
 def buffer():
     gate_obj = get_connection()
-    buffer_data = gate_obj.read_buffer()
+    try:
+        buffer_data = gate_obj.read_buffer()
+    except OSError as e:
+        return handle_os_error(e, gate_obj)
 
     data = {
         'raw': buffer_data.base64(),
@@ -121,7 +126,10 @@ def buffer():
 @app.route('/buffer_clear')
 def buffer_clear():
     gate_obj = get_connection()
-    response = gate_obj.clear_buffer()
+    try:
+        response = gate_obj.clear_buffer()
+    except OSError as e:
+        return handle_os_error(e, gate_obj)
     return {'raw': response.base64(), 'success': response.success}
 
 
@@ -129,7 +137,10 @@ def buffer_clear():
 def raw():
     gate_obj = get_connection()
     data = flask.request.data
-    response = gate_obj.send_read(data)
+    try:
+        response = gate_obj.send_read(data)
+    except OSError as e:
+        return handle_os_error(e, gate_obj)
     return response
 
 

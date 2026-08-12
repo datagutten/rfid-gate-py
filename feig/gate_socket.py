@@ -12,6 +12,8 @@ logger = logging.getLogger(__name__)
 
 class FeigGate:
     ip: str
+    port: int
+    socket: socket.socket
     gate_id: int = 0
     gate_info = feig_response.ReaderInfoResponse
     save: bool = False
@@ -19,11 +21,9 @@ class FeigGate:
     connected: bool = False
 
     def __init__(self, ip: str, port: int = 10001, save=True):
-        logger.info('Connecting to %s:%d' % (ip, port))
         self.ip = ip
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.settimeout(1)
-        self.socket.connect((ip, port))
+        self.port = port
+        self.connect()
         logger.info('Get gate info')
         self.gate_info = self.info()
         self.gate_id = self.gate_info.id
@@ -36,8 +36,20 @@ class FeigGate:
             if not self.data_folder.exists():
                 self.data_folder.mkdir(parents=True)
 
+    def __str__(self):
+        if self.gate_id:
+            return 'IP %s serial %d' % (self.ip, self.gate_id)
+        else:
+            return 'IP %s' % self.ip
+
     def __del__(self):
         self.socket.close()
+
+    def connect(self):
+        logger.info('Connecting to %s:%d' % (self.ip, self.port))
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.settimeout(1)
+        self.socket.connect((self.ip, self.port))
 
     def close(self):
         logger.info('Closing socket to gate %s' % self.gate_id)
